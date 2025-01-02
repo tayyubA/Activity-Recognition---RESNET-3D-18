@@ -1,1 +1,1 @@
-Used a RESNET-3D-18 model trained on the Kinetics-400 dataset to detect human activity recognition in the provided video
+Used a pretrained Pytorch model using RESNET 3D 18 on the kinetics-400 dataset to recognize human action in videos.
