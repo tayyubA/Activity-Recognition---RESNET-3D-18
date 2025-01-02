@@ -7,38 +7,36 @@ import numpy as np
 import utils
 
 
-# construct the argument parser
+# python library to accept and process command line arguments in a dictionery format
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', help='path to input video')
 parser.add_argument('-c', '--clip-len', dest='clip_len', default=16, type=int,
                     help='number of frames to consider for each prediction')
 args = vars(parser.parse_args())
-#### PRINT INFO #####
 print(f"Number of frames to consider for each prediction: {args['clip_len']}")
 
+#checking if CUDA is available, if not then execute on CPU
+#Load the pytorch pretrained model
+#evaluate
 class_names = utils.class_names
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# load the model
 model = torchvision.models.video.r3d_18(pretrained=True, progress=True)
-# load the model onto the computation device
 model = model.eval().to(device)
 
+
+#preprocessing
 cap = cv2.VideoCapture(args['input'])
 if (cap.isOpened() == False):
     print('Error while trying to read video. Please check path again')
-# get the frame width and height
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
-
 save_name = f"{args['input'].split('/')[-1].split('.')[0]}"
-# define codec and create VideoWriter object 
 out = cv2.VideoWriter(f"outputs/{save_name}.mp4", 
                       cv2.VideoWriter_fourcc(*'mp4v'), 30, 
                       (frame_width, frame_height))
 
-frame_count = 0 # to count total frames
-total_fps = 0 # to get the final frames per second
-# a clips list to append and store the individual frames
+frame_count = 0
+total_fps = 0
 clips = []
 
 # read until end of video
@@ -47,7 +45,7 @@ while(cap.isOpened()):
     ret, frame = cap.read()
     if ret == True:
         # get the start time
-        start_time = time.time()
+        #start_time = time.time()
         image = frame.copy()
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = utils.transform(image=frame)['image']
@@ -70,14 +68,14 @@ while(cap.isOpened()):
                 # map predictions to the respective class names
                 label = class_names[preds].strip()
             # get the end time
-            end_time = time.time()
+            #end_time = time.time()
             # get the fps
-            fps = 1 / (end_time - start_time)
+            #fps = 1 / (end_time - start_time)
             # add fps to total fps
-            total_fps += fps
+            #total_fps += fps
             # increment frame count
-            frame_count += 1
-            wait_time = max(1, int(fps/4))
+            #frame_count += 1
+            #wait_time = max(1, int(fps/4))
             cv2.putText(image, label, (15, 25),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, 
                         lineType=cv2.LINE_AA)
@@ -85,16 +83,16 @@ while(cap.isOpened()):
             # cv2.imshow('image', image)
             out.write(image)
             # press `q` to exit
-            if cv2.waitKey(wait_time) & 0xFF == ord('q'):
-                break
+            #if cv2.waitKey(wait_time) & 0xFF == ord('q'):
+                #break
     else:
         break
     
-    
-# release VideoCapture()
+#postrequisties
 cap.release()
-# close all frames and video windows
 cv2.destroyAllWindows()
 # calculate and print the average FPS
-avg_fps = total_fps / frame_count
-print(f"Average FPS: {avg_fps:.3f}")
+#avg_fps = total_fps / frame_count
+#print(f"Average FPS: {avg_fps:.3f}")
+
+print(f'Video processed and saved successfuly at {save_name}.mp4')
