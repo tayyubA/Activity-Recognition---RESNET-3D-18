@@ -35,8 +35,8 @@ out = cv2.VideoWriter(f"outputs/{save_name}.mp4",
                       cv2.VideoWriter_fourcc(*'mp4v'), 30, 
                       (frame_width, frame_height))
 
-frame_count = 0
-total_fps = 0
+#frame_count = 0
+#total_fps = 0
 clips = []
 
 # read until end of video
